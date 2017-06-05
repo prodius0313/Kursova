@@ -1,31 +1,31 @@
-;Представити матрицю 3*3 як структуру ?з полями, де
-;кожне з яких в?дпов?дає одному елементу.
-;Реал?зовано додавання ? множення матриць, а також знаходження визначника
-kEnter equ 0Dh   ;Коди клав?ш
+;Представити матрицю 3*3 як структуру iз полями, 
+;кожне з яких вiдповiдає одному елементу.
+;Реалiзовано додавання i множення матриць, а також знаходження визначника
+kEnter equ 0Dh   ;Коди клавiш
 KBSp   equ 08h
 kSp    equ 20h
 
-;Кл?к на будь-яку клав?шу
+;Клiк на будь-яку клавiшу
 readkey macro
    xor ah,ah
    int 16h
 endm
-;Збереження рег?стр?в у стеку
+;Збереження регiстрiв у стеку
 SaveReg macro RegList
    irp reg,<RegList>
       push reg
    endm
 endm
-;В?дновлення рег?стр?в з? стеку
+;Вiдновлення регiстрiв зi стеку
 LoadReg macro RegList
    irp reg,<RegList>
       pop reg
    endm
 endm
 
-.286  ;Дозволяємо ?нструкц?ї 268
+.286  ;Дозволяємо iнструкцiї 268
 
-N = 3 ;Розм?рн?сть матриц?
+N = 3 ;Розмiрнiсть матрицi
 Matrix struc ; описуємо шаблон структури
    e11 dw 0
    e12 dw 0
@@ -41,11 +41,11 @@ Matrix ends
 ;СЕГМЕНТ ДАНИХ
 data segment word 'data' use16
    a Matrix <>
-   b Matrix <>  ;Задали 3 матриц?
+   b Matrix <>  ;Задали 3 матрицi
    d Matrix <>
 
-   InpM db 'Введення матриц?','$'
-   InpEl db 'Введ?ть елемент','$'
+   InpM db 'Введення матрицi','$'
+   InpEl db 'Введiть елемент','$'
    InpEnd db ']: ','$'
   
    RezAdd  db 'A+B:',10,13,'$'
@@ -53,7 +53,7 @@ data segment word 'data' use16
    CRLF    db 10,13,'$'
    DetermA db 'Визначник A: ','$'
    DetermB db 'Визначник B: ','$'
-   Nam     db ?  ;?м'я матриц? (для введеня)
+   Nam     db ?  ;iм'я матрицi (для введеня)
 data ends
 
 ;СЕГМЕНТ СТЕКУ
@@ -68,20 +68,20 @@ assume CS:text,ES:data,DS:data,SS:stk
 ;-------------ПРОЦЕДУРИ-------------------------
 ;ОЧИЩЕННЯ ЕКРАНУ
 ClrScr proc
-   SaveReg <ax,bx,cx,dx>  ;збер?гаємо рег?стри у стеку
+   SaveReg <ax,bx,cx,dx>  ;зберiгаємо регiстри у стеку
    mov ah,02h
    xor bh,bh
    xor dx,dx
-   int 10h  ;встановлюємо курсор у верхн?й л?вий кут
+   int 10h  ;встановлюємо курсор у верхнiй лiвий кут
    mov ax,0920h
    mov bl,7
-   mov cx,80*25  ;виводимо 2000 проб?л?в
+   mov cx,80*25  ;виводимо 2000 пробiлiв
    int 10h
-   LoadReg <dx,cx,bx,ax>  ;завантажуємо рег?стри з? стеку
+   LoadReg <dx,cx,bx,ax>  ;завантажуємо регiстри зi стеку
    ret
 ClrScr endp
 
-;ВИВ?Д СИМВОЛУ
+;ВИВIД СИМВОЛУ
 OutputCh proc  ;в al - код символу
    SaveReg <ax,bx>
    mov ah,0Eh
@@ -96,7 +96,7 @@ OutCh macro ByteVar
    call OutputCh
 endm
 
-;ВИВ?Д РЯДКА
+;ВИВIД РЯДКА
 OutputStr proc  ;в dx - адреса рядка
    push ax
    mov ah,09h
@@ -105,7 +105,7 @@ OutputStr proc  ;в dx - адреса рядка
    ret
 OutputStr endp
 
-;ПЕРЕХ?Д НА НОВИЙ РЯДОК НА ЕКРАН?
+;ПЕРЕХIД НА НОВИЙ РЯДОК НА ЕКРАНI
 ChangeLine proc
    push dx
    mov dx,offset CRLF
@@ -114,7 +114,7 @@ ChangeLine proc
    ret
 ChangeLine endp
 
-;ВИВЕДЕННЯ Ц?ЛОГО ЧИСЛА З? ЗНАКОМ
+;ВИВЕДЕННЯ ЦIЛОГО ЧИСЛА ЗI ЗНАКОМ
 InputBin proc  ;результат в ax
    SaveReg <bx,cx,dx,di,si,bp>
    xor ax,ax
@@ -136,7 +136,7 @@ Nac:
    mov ax,di
    mul bp
    or dx,dx  ;якщо є переповнення
-   jnz Nac  ;якщо є - вводимо дал?
+   jnz Nac  ;якщо є - вводимо далi
 
    mov dl,bl
    sub dl,'0'
@@ -154,13 +154,13 @@ PressMinus:
    mov cl,1  ;встановлюємо прапорець в 1
 
 OutNextCh:
-   call OutputCh  ;виводимо м?нус на екран
+   call OutputCh  ;виводимо мiнус на екран
    inc si
    jmp short Nac
 
 PressBSp:
    or si,si
-   jz Nac  ;якщо н?чого не ввели, то вводимо дал?
+   jz Nac  ;якщо нiчого не ввели, то вводимо далi
   
    mov ah,02h
    mov dl,kBSp
@@ -171,11 +171,11 @@ PressBSp:
    int 21h
    
    dec si
-   or si,si  ;якщо стерли л?вий символ
+   or si,si  ;якщо стерли лiвий символ
    jz StartPosition  ;то все скидаємо на нуль
    xor dx,dx
-   mov ax,di  ;?накше
-   div bp   ;д?лимо на 10
+   mov ax,di  ;iнакше
+   div bp   ;дiлимо на 10
    mov di,ax
    jmp short Nac
 
@@ -187,11 +187,11 @@ LessNumb:
    cmp al,kEnter
    jne Nac
 
-   or si,si  ;якщо н?чого не ввели
-   jz Nac  ;то вводимо дал?
+   or si,si  ;якщо нiчого не ввели
+   jz Nac  ;то вводимо далi
 
    mov ax,di
-   or cl,cl  ;перев?ряємо знак
+   or cl,cl  ;перевiряємо знак
    jz EndInputBin
    neg ax
 EndInputBin:
@@ -200,7 +200,7 @@ EndInputBin:
    ret
 InputBin endp
 
-;ВИВЕДЕННЯ Ц?ЛОГО ЧИСЛА З? ЗНАКОМ
+;ВИВЕДЕННЯ ЦIЛОГО ЧИСЛА ЗI ЗНАКОМ
 OutputBin proc   ;в ax - виведене число
    SaveReg <ax,bp,dx>
    cmp ax,0
@@ -213,29 +213,29 @@ OutputBin proc   ;в ax - виведене число
 
 PositNumber:
    mov bp,10
-   push bp   ;збер?гаємо ознаку к?нця числа
+   push bp   ;зберiгаємо ознаку кiнця числа
 @@l:
    xor dx,dx
-   div bp       ;д?лимо
-   push  dx      ;Збер?гаємо цифру
+   div bp       ;дiлимо
+   push  dx      ;Зберiгаємо цифру
    or ax,ax     ;залишився 0?
-   jnz @@l      ;н? -> продовжуємо
-   mov ah,02h   ;функц?я виведення символу
+   jnz @@l      ;нi -> продовжуємо
+   mov ah,02h   ;функцiя виведення символу
 @@l2:
-   pop dx       ;в?дновлюємо цифру
-   cmp dx,10    ;д?йшли до к?нця -> вих?д
+   pop dx       ;вiдновлюємо цифру
+   cmp dx,10    ;дiйшли до кiнця -> вихiд
    je @@ex
    add dl,'0'   ;перетворюємо число у цифру
    int 21h      ;виводимо цифру на екран
-   jmp short @@l2 ;? продовжуємо
+   jmp short @@l2 ;i продовжуємо
 @@ex:
    LoadReg <dx,bp,ax>
    ret
 OutputBin endp
 
-;ВВЕДЕННЯ МАТРИЦ?
-InputMatrix proc            ;в bx - адреса матриц?
-   pusha  ;????. ????????   ;в Nam - ?м'я матриц?
+;ВВЕДЕННЯ МАТРИЦI
+InputMatrix proc            ;в bx - адреса матрицi
+   pusha  ;iiii. iiiiiiii   ;в Nam - iм'я матрицi
 
    mov dx,offset InpM
    call OutputStr
@@ -243,12 +243,12 @@ InputMatrix proc            ;в bx - адреса матриц?
    OutCh Nam
    call ChangeLine
 
-   mov di,1  ;?н?ц?ал?зуємо л?чильник №1
+   mov di,1  ;iнiцiалiзуємо лiчильник №1
    mov cx,N
 
 InpCycle1:
    push cx
-   mov si,1  ;?н?ц?ал?зуємо л?чильник №2
+   mov si,1  ;iнiцiалiзуємо лiчильник №2
    mov cx,N
 
 InpCycle2:
@@ -257,10 +257,10 @@ InpCycle2:
    OutCh Nam
    OutCh '['
    mov ax,di
-   call OutputBin  ;вводимо перший л?чильник
+   call OutputBin  ;вводимо перший лiчильник
    OutCh ','
    mov ax,si
-   call OutputBin  ;вводимо другий л?чильник
+   call OutputBin  ;вводимо другий лiчильник
    mov dx,offset InpEnd
    call OutputStr
    call InputBin
@@ -272,42 +272,42 @@ InpCycle2:
    inc di
    pop cx
    loop InpCycle1
-   popa  ;в?дновлюємо рег?стри
+   popa  ;вiдновлюємо регiстри
    ret
 InputMatrix endp
 
-;ВИВЕДЕННЯ МАТРИЦ? D
+;ВИВЕДЕННЯ МАТРИЦI D
 OutputC proc
-   pusha  ;збер?гаємо рег?стри
+   pusha  ;зберiгаємо регiстри
    mov cx,N
    xor bx,bx
    xor di,di
 
 Out1Cycl:
-   push cx  ;збер?гаємо л?чильник зовн?шнього циклу
+   push cx  ;зберiгаємо лiчильник зовнiшнього циклу
    mov cx,N
 
 Out2Cycl:
    mov ax,word ptr d[di]
    call OutputBin  ;виводимо чергове число
-   OutCh ' '       ;виводимо проб?л
+   OutCh ' '       ;виводимо пробiл
    add di,2
 
    loop Out2Cycl
 
    mov dx,offset CRLF
    call OutputStr  ;переходимо на новий рядок
-   pop cx  ;в?дновлюємо л?чильник зовн?шнього циклу
+   pop cx  ;вiдновлюємо лiчильник зовнiшнього циклу
 
    loop Out1Cycl
-   popa  ;в?дновлюємо рег?стри
+   popa  ;вiдновлюємо регiстри
    ret
 OutputC endp
 
 ;ДОДАВАННЯ ДВОХ МАТРИЦЬ A + B = D
 AddMatrix proc
    SaveReg <ax,cx,di>
-   mov cx,N*N  ;множимо N^2 елемент?в
+   mov cx,N*N  ;множимо N^2 елементiв
    xor di,di
 AddCycle:
    mov ax,word ptr a[di]
@@ -321,7 +321,7 @@ AddMatrix endp
 
 ;МНОЖЕННЯ ДВОХ МАТРИЦЬ A * B = D
 MulMatrix proc
-   pusha  ;збережемо рег?стр
+   pusha  ;збережемо регiстр
    xor dl,dl  ;i=0
    mov cx,N   ;for  i=0 to N-1
 
@@ -346,10 +346,10 @@ m3:
    adc ah,0   ;ax=i*N+k
    shl ax,1   ;*2, так як елементи структури типу dw 
 
-   mov si,offset A  ;виконувана адреса матриц? A
+   mov si,offset A  ;виконувана адреса матрицi A
    add si,ax        ;адреса елемента a[i,k] 
    mov ax,[si]      ;елемент a[i,k]
-   mov di,ax        ;елемент a[i,k] збер?гаємо в di
+   mov di,ax        ;елемент a[i,k] зберiгаємо в di
 
 ;знаходження адреси a[k,j]
    mov al,bl   ;al=k
@@ -359,7 +359,7 @@ m3:
    adc ah,0    ;ax=k*N+j
    shl ax,1    ;*2, так як елементи структури типу dw
 
-   mov si,offset B  ;виконувана адреса матриц? B
+   mov si,offset B  ;виконувана адреса матрицi B
    add si,ax        ;адреса елементу B[k,j] 
    mov ax,[si]      ;елемент B[k,j]
    push dx
@@ -378,7 +378,7 @@ m3:
    adc ah,0       ;ax=i*N+j
    shl ax,1       ;*2, так як елементи структури типу dw 
 
-   mov si,offset d  ;виконувана адреса матриц? D
+   mov si,offset d  ;виконувана адреса матрицi D
    add si,ax       ;адреса елементу c[i,j] 
    mov ax,bp       ;sum в ax
    mov [si],ax     ;елемент a[i,j]
@@ -391,11 +391,11 @@ m3:
    pop cx
    loop m1        ;цикл по i
 
-   popa  ;в?дновимо рег?стри
+   popa  ;вiдновимо регiстри
    ret       
 MulMatrix endp
 
-DetMatrix proc            ;в bx - адреса матриц?
+DetMatrix proc            ;в bx - адреса матрицi
    SaveReg <bx,cx,dx,di>  ;в ax - визначник
 ;Det=e11*(e22*e33 - e23*e32) - e12*(e21*e33 - e23*e31) + e13*(e21*e32 - e22*e31)
 ;1 ЧАСТИНА. CX = e11*(e22*e33 - e23*e32)
@@ -445,32 +445,32 @@ START:
    mov bx,offset B
    mov Nam,'B'
    call InputMatrix
-;рахуємо ? виводимо визначник матриц? A
+;рахуємо i виводимо визначник матрицi A
    mov dx,offset DetermA
    call OutputStr
    mov bx,offset A
    call DetMatrix
    call OutputBin
    call ChangeLine
-;рахуємо ? виводимо визначник матриц? B
+;рахуємо i виводимо визначник матрицi B
    mov dx,offset DetermB
    call OutputStr
    mov bx,offset B
    call DetMatrix
    call OutputBin
    call ChangeLine
-;рахуємо суму матриць ? виводимо на екран
+;рахуємо суму матриць i виводимо на екран
    mov dx,offset RezAdd
    call OutputStr
    call AddMatrix
    call OutputC
-;рахуємо добуток матриць ? виводимо на екран
+;рахуємо добуток матриць i виводимо на екран
    mov dx,offset RezMul
    call OutputStr
    call MulMatrix
    call OutputC
 
-   readkey  ;чекаємо натискання клав?ш?
+   readkey  ;чекаємо натискання клавiшi
    mov ax,4c00h  ;виходимо
    int 21h
 text ends
